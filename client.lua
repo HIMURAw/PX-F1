@@ -2,6 +2,7 @@ local QBCore = exports['qb-core']:GetCoreObject()
 
 local cooldown = false  
 local cooldownTime = Config.Time  
+local display = false
 
 function spawnVehicle(vehicleName)
     local playerPed = PlayerPedId()
@@ -19,50 +20,8 @@ function spawnVehicle(vehicleName)
     -- Araç anahtarını ver
     TriggerEvent("vehiclekeys:client:SetOwner", GetVehicleNumberPlateText(vehicle))
 
-
-
     SetModelAsNoLongerNeeded(vehicleName)
 end
-
-local menuItems = {
-    {
-        header = Config.text1,
-        txt = "Araç çıkart",
-        params = {
-            event = "spawn:vehicle2"
-        }
-    },
-    {
-        header = Config.text2,
-        txt = "Araç çıkart",
-        params = {
-            event = "spawn:vehicle1"
-        }
-    },
-    {
-        header = Config.text3,
-        txt = "Araç çıkart",
-        params = {
-            event = "spawn:vehicle3"
-        }
-    },
-    {
-        header = "KAPAT",
-        txt = "Menüyü kapat",
-        params = {
-            event = "qb-menu:close"
-        }
-    }
-}
-
-Citizen.CreateThread(function()
-    while true do
-        Citizen.Wait(0)
-        if IsControlJustPressed(0, 288) then
-            exports['qb-menu']:openMenu(menuItems)
-        end
-    end
-end)
 
 function startCooldown()
     cooldown = true
@@ -79,33 +38,51 @@ local function canSpawnVehicle()
            not exports["PX-warzone"]:inZone()            -- Belirtilen bölgede değilse
 end
 
-RegisterNetEvent('spawn:vehicle3', function()
-    if canSpawnVehicle() and not cooldown then  
-        spawnVehicle(Config.vehicle3)
-        startCooldown()  
-    else
-        QBCore.Functions.Notify("Araç çıkartmak için araçta olmamalısın veya izinli bölgede olmamalısın!", "error")  
+-- UI Functions
+function ToggleUI()
+    display = not display
+    SetNuiFocus(display, display)
+    SendNUIMessage({
+        type = "toggle",
+        status = display
+    })
+end
+
+RegisterNUICallback('spawnVehicle', function(data, cb)
+    local vehicleType = data.vehicle
+    local vehicleModel = nil
+    
+    if vehicleType == 'vehicle1' then
+        vehicleModel = Config.vehicle1
+    elseif vehicleType == 'vehicle2' then
+        vehicleModel = Config.vehicle2
+    elseif vehicleType == 'vehicle3' then
+        vehicleModel = Config.vehicle3
     end
+
+    if vehicleModel then
+        if canSpawnVehicle() and not cooldown then
+            spawnVehicle(vehicleModel)
+            startCooldown()
+            ToggleUI()
+        else
+            QBCore.Functions.Notify("Araç çıkartmak için araçta olmamalısın veya izinli bölgede olmamalısın!", "error")
+        end
+    end
+    cb('ok')
 end)
 
-RegisterNetEvent('spawn:vehicle2', function()
-    if canSpawnVehicle() and not cooldown then  
-        spawnVehicle(Config.vehicle1)
-        startCooldown()  
-    else
-        QBCore.Functions.Notify("Araç çıkartmak için araçta olmamalısın veya izinli bölgede olmamalısın!", "error")  
-    end
+RegisterNUICallback('closeUI', function(data, cb)
+    ToggleUI()
+    cb('ok')
 end)
 
-RegisterNetEvent('spawn:vehicle1', function()
-    if canSpawnVehicle() and not cooldown then
-        spawnVehicle(Config.vehicle2)
-        startCooldown()
-    else
-        QBCore.Functions.Notify("Araç çıkartmak için araçta olmamalısın veya izinli bölgede olmamalısın!", "error")
+-- Key binding for UI
+Citizen.CreateThread(function()
+    while true do
+        Citizen.Wait(0)
+        if IsControlJustPressed(0, 288) then -- F1 key
+            ToggleUI()
+        end
     end
-end)
-
-RegisterNetEvent('qb-menu:close', function()
-    exports['qb-menu']:closeMenu()
 end)
