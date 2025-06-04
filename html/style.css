@@ -1,8 +1,25 @@
+:root {
+    --primary-color: #00FFFF; /* Parlak Açık Mavi */
+    --primary-dark: #00BFFF; /* Biraz daha koyu mavi vurgu */
+    --secondary-color: #FF6347; /* Kapatma butonu rengi (isteğe bağlı, kırmızı tonu) */
+    --text-color: #E0E0E0; /* Açık gri metin */
+    --card-bg: rgba(0, 0, 0, 0.3); /* Hafif şeffaf siyah kart arka planı */
+    --card-hover: rgba(0, 255, 255, 0.1); /* Parlak mavi hover arka planı */
+    --card-border: rgba(255, 255, 255, 0.212); /* Hafif beyaz kenarlık */
+    --card-hover-border: rgba(0, 255, 255, 0.3); /* Parlak mavi hover kenarlığı */
+    --menu-bg: rgba(0, 0, 0, 0.8); /* Daha koyu şeffaf menü arka planı */
+    --shadow-color: rgba(0, 255, 255, 0.6); /* Parlak mavi gölge rengi, daha opak */
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    user-select: none; /* Prevent text selection */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE/Edge */
 }
 
 body {
@@ -10,7 +27,6 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: transparent;
 }
 
 body.active {
@@ -23,26 +39,24 @@ body.active {
     right: 20px;
     width: 40px;
     height: 40px;
-    background: transparent;
-    background-color: #00000056;
-    border: 2px solid #00bfff;
+    background-color: var(--card-bg);
+    border: 2px solid var(--primary-color);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #00bfff;
+    color: var(--primary-color);
     font-size: 24px;
     cursor: pointer;
     transition: all 0.3s ease;
     z-index: 1000;
-    box-shadow: 0 0 8px rgba(0, 191, 255, 0.3);
 }
 
 .close-btn:hover {
-    background: #00bfff;
-    color: #000;
+    background: var(--primary-color);
+    color: var(--text-color);
     transform: scale(1.1);
-    box-shadow: 0 0 10px rgba(0, 191, 255, 0.4);
+    box-shadow: 0 0 20px var(--shadow-color);
 }
 
 .container {
@@ -53,27 +67,28 @@ body.active {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
-    padding: 20px;
-    background: transparent;
-    border-radius: 20px;
-    border: 2px solid #00bfff;
-    box-shadow: 0 0 15px rgba(0, 191, 255, 0.2);
+    padding: 25px;
+    background: var(--menu-bg);
+    border-radius: 30px;
+    border: 2px solid var(--card-border);
+    box-shadow: 0 0 20px var(--shadow-color);
 }
 
 .vehicle-card {
-    background: transparent;
-    border-radius: 15px;
+    background: var(--card-bg);
+    border-radius: 25px;
     padding: 20px;
     width: 300px;
-    border: 2px solid #00bfff;
-    box-shadow: 0 0 10px rgba(0, 191, 255, 0.15);
+    border: 2px solid var(--card-border);
+    box-shadow: 0 0 2px var(--shadow-color);
     transition: all 0.3s ease;
 }
 
 .vehicle-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 0 15px rgba(0, 191, 255, 0.25);
-    border-color: #00ffff;
+    background: var(--card-hover);
+    border-color: var(--card-hover-border);
+    box-shadow: 0 0 15px var(--shadow-color);
 }
 
 .vehicle-image {
@@ -82,17 +97,17 @@ body.active {
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    border-radius: 10px;
+    border-radius: 20px;
     margin-bottom: 15px;
-    border: 2px solid #00bfff;
-    box-shadow: 0 0 8px rgba(0, 191, 255, 0.2);
-    background-color: transparent;
+    border: 2px solid var(--card-border);
+    box-shadow: 0 0 15px var(--shadow-color);
+    background-color: var(--card-bg);
     transition: all 0.3s ease;
 }
 
 .vehicle-card:hover .vehicle-image {
-    box-shadow: 0 0 12px rgba(0, 191, 255, 0.3);
-    border-color: #00ffff;
+    border-color: var(--card-hover-border);
+    box-shadow: 0 0 20px var(--shadow-color);
 }
 
 .vehicle-info {
@@ -100,35 +115,35 @@ body.active {
 }
 
 h2 {
-    color: #00bfff;
+    color: var(--text-color);
     margin-bottom: 15px;
     font-size: 24px;
-    text-shadow: 0 0 5px rgba(0, 191, 255, 0.3);
+    text-shadow: 0 0 10px var(--shadow-color);
 }
 
 .spawn-btn {
-    background: transparent;
-    color: #00bfff;
-    border: 2px solid #00bfff;
+    background: var(--card-bg);
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
     padding: 12px 25px;
-    border-radius: 12px;
+    border-radius: 15px;
     cursor: pointer;
     font-size: 16px;
     transition: all 0.3s ease;
     width: 100%;
     text-transform: uppercase;
     letter-spacing: 1px;
-    box-shadow: 0 0 8px rgba(0, 191, 255, 0.2);
+    box-shadow: 0 0 15px var(--shadow-color);
 }
 
 .spawn-btn:hover {
-    background: #00bfff;
-    color: #000;
+    background: var(--primary-color);
+    color: var(--text-color);
     transform: translateY(-2px);
-    box-shadow: 0 0 12px rgba(0, 191, 255, 0.3);
+    box-shadow: 0 0 25px var(--shadow-color);
 }
 
 .spawn-btn:active {
     transform: translateY(0);
-    box-shadow: 0 0 5px rgba(0, 191, 255, 0.2);
+    box-shadow: 0 0 10px var(--shadow-color);
 } 

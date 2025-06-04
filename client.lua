@@ -1,10 +1,14 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 
-local cooldown = false  
-local cooldownTime = Config.Time  
+local cooldown = false
+local cooldownTime = 2000     -- 5 seconds in milliseconds
 local display = false
+local spawnInProgress = false -- Add this flag to prevent multiple spawns
 
 function spawnVehicle(vehicleName)
+    if spawnInProgress then return end -- Prevent multiple spawns
+    spawnInProgress = true
+
     local playerPed = PlayerPedId()
     local pos = GetEntityCoords(playerPed)
 
@@ -21,21 +25,24 @@ function spawnVehicle(vehicleName)
     TriggerEvent("vehiclekeys:client:SetOwner", GetVehicleNumberPlateText(vehicle))
 
     SetModelAsNoLongerNeeded(vehicleName)
+    spawnInProgress = false -- Reset the flag after spawn is complete
 end
 
 function startCooldown()
     cooldown = true
+    QBCore.Functions.Notify("2 saniye içinde tekrar araç çıkaramazsın!", "error")
     Citizen.SetTimeout(cooldownTime, function()
-        cooldown = false  
+        cooldown = false
+        QBCore.Functions.Notify("Artık araç çıkarabilirsin!", "success")
     end)
 end
 
 local function canSpawnVehicle()
     local playerPed = PlayerPedId()
-    return not IsPedInAnyVehicle(playerPed, false) and  -- Oyuncu araçta değilse
-           not exports["f4st-ffa"]:InZone() and            -- Belirtilen bölgede değilse
-           not exports["viber-aimlab"]:InZone() and           -- Belirtilen bölgede değilse
-           not exports["PX-warzone"]:inZone()            -- Belirtilen bölgede değilse
+    return not IsPedInAnyVehicle(playerPed, false) and -- Oyuncu araçta değilse
+        not exports["PX-FFa"]:InZone() and             -- Belirtilen bölgede değilse
+        not exports["viber-aimlab"]:InZone() and       -- Belirtilen bölgede değilse
+        not exports["PX-warzone"]:inZone()             -- Belirtilen bölgede değilse
 end
 
 -- UI Functions
@@ -49,9 +56,20 @@ function ToggleUI()
 end
 
 RegisterNUICallback('spawnVehicle', function(data, cb)
+    if spawnInProgress then
+        cb('ok')
+        return
+    end
+
+    if cooldown then
+        QBCore.Functions.Notify("Lütfen 2 saniye bekleyin!", "error")
+        cb('ok')
+        return
+    end
+
     local vehicleType = data.vehicle
     local vehicleModel = nil
-    
+
     if vehicleType == 'vehicle1' then
         vehicleModel = Config.vehicle1
     elseif vehicleType == 'vehicle2' then
@@ -61,7 +79,7 @@ RegisterNUICallback('spawnVehicle', function(data, cb)
     end
 
     if vehicleModel then
-        if canSpawnVehicle() and not cooldown then
+        if canSpawnVehicle() then
             spawnVehicle(vehicleModel)
             startCooldown()
             ToggleUI()
