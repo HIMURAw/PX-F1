@@ -40,9 +40,9 @@ end
 local function canSpawnVehicle()
     local playerPed = PlayerPedId()
     return not IsPedInAnyVehicle(playerPed, false) and -- Oyuncu araçta değilse
-        not exports["PX-FFa"]:InZone() and             -- Belirtilen bölgede değilse
-        not exports["viber-aimlab"]:InZone() and       -- Belirtilen bölgede değilse
-        not exports["PX-warzone"]:inZone()             -- Belirtilen bölgede değilse
+        -- not exports["PX-FFa"]:InZone() and             -- Belirtilen bölgede değilse
+        -- not exports["viber-aimlab"]:InZone() and       -- Belirtilen bölgede değilse
+        not exports["PX-warzone"]:inZone() -- Belirtilen bölgede değilse
 end
 
 -- UI Functions
@@ -74,8 +74,6 @@ RegisterNUICallback('spawnVehicle', function(data, cb)
         vehicleModel = Config.vehicle1
     elseif vehicleType == 'vehicle2' then
         vehicleModel = Config.vehicle2
-    elseif vehicleType == 'vehicle3' then
-        vehicleModel = Config.vehicle3
     end
 
     if vehicleModel then
