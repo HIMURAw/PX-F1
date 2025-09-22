@@ -6,34 +6,36 @@ local display = false
 local spawnInProgress = false -- Add this flag to prevent multiple spawns
 
 function spawnVehicle(vehicleName)
-    if spawnInProgress then return end -- Prevent multiple spawns
-    spawnInProgress = true
+    if exports['PX-Safezone']:isSafezone() then
+        if spawnInProgress then return end -- Prevent multiple spawns
+        spawnInProgress = true
 
-    local playerPed = PlayerPedId()
-    local pos = GetEntityCoords(playerPed)
+        local playerPed = PlayerPedId()
+        local pos = GetEntityCoords(playerPed)
 
-    RequestModel(vehicleName)
-    while not HasModelLoaded(vehicleName) do
-        Citizen.Wait(500)
+        RequestModel(vehicleName)
+        while not HasModelLoaded(vehicleName) do
+            Citizen.Wait(500)
+        end
+
+        local vehicle = CreateVehicle(vehicleName, pos.x, pos.y, pos.z, GetEntityHeading(playerPed), true, false)
+
+        TaskWarpPedIntoVehicle(playerPed, vehicle, -1)
+
+        -- Araç anahtarını ver
+        TriggerEvent("vehiclekeys:client:SetOwner", GetVehicleNumberPlateText(vehicle))
+
+        SetModelAsNoLongerNeeded(vehicleName)
+        spawnInProgress = false -- Reset the flag after spawn is complete
+    else
+        QBCore.Functions.Notify("Araç çıkartmak için güvenli bölge içinde olmalısın!", "error")
     end
-
-    local vehicle = CreateVehicle(vehicleName, pos.x, pos.y, pos.z, GetEntityHeading(playerPed), true, false)
-
-    TaskWarpPedIntoVehicle(playerPed, vehicle, -1)
-
-    -- Araç anahtarını ver
-    TriggerEvent("vehiclekeys:client:SetOwner", GetVehicleNumberPlateText(vehicle))
-
-    SetModelAsNoLongerNeeded(vehicleName)
-    spawnInProgress = false -- Reset the flag after spawn is complete
 end
 
 function startCooldown()
     cooldown = true
-    QBCore.Functions.Notify("2 saniye içinde tekrar araç çıkaramazsın!", "error")
     Citizen.SetTimeout(cooldownTime, function()
         cooldown = false
-        QBCore.Functions.Notify("Artık araç çıkarabilirsin!", "success")
     end)
 end
 
@@ -62,7 +64,6 @@ RegisterNUICallback('spawnVehicle', function(data, cb)
     end
 
     if cooldown then
-        QBCore.Functions.Notify("Lütfen 2 saniye bekleyin!", "error")
         cb('ok')
         return
     end

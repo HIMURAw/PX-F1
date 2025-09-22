@@ -1,7 +1,6 @@
 shared_script '@PX-PvP/shared_fg-obfuscated.lua'
 shared_script '@PX-PvP/ai_module_fg-obfuscated.lua'
 fx_version 'cerulean'
-dependencies 'PX-Gun-Base'
 games { 'gta5' }
 author 'HIMURA'
 description 'discord.gg/pixeldev'
@@ -12,7 +11,7 @@ files {
     'html/index.html',
     'html/style.css',
     'html/script.js',
-    'html/pxlogo.png'
+    'html/carimage/*.png',
 }
 
 client_scripts {
